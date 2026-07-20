@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ results: pushed });
+    return NextResponse.json({ results: pushed, sanitized: toSend });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

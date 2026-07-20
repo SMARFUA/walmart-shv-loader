@@ -31,6 +31,20 @@ type PushResult = {
   errors?: string[];
 };
 
+type SHVLoad = {
+  load_number: string;
+  bol_number: string;
+  shipper_name: string;
+  origin_city: string;
+  origin_state: string;
+  destination_city: string;
+  destination_state: string;
+  ship_date: string;
+  delivery_date: string;
+  weight: number;
+  equipment_type: string;
+};
+
 function equipmentType(mode: string): { type: string; needsReview: boolean; reason?: string } {
   const m = (mode ?? "").toUpperCase().trim();
   if (m === "AMBIENT") return { type: "Dry Van 53'", needsReview: false };
@@ -58,12 +72,14 @@ export default function Home() {
   const [pushMsg, setPushMsg] = useState("");
   const [pushState, setPushState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [pushResults, setPushResults] = useState<PushResult[]>([]);
+  const [sanitizedLoads, setSanitizedLoads] = useState<SHVLoad[]>([]);
 
   async function fetchLoads() {
     setFetchState("loading");
     setFetchMsg("Fetching open tenders from Walmart...");
     setLoads([]);
     setPushResults([]);
+    setSanitizedLoads([]);
     setPushMsg("");
     setPushState("idle");
 
@@ -104,6 +120,7 @@ export default function Home() {
       }
       const results: PushResult[] = data.results ?? [];
       setPushResults(results);
+      setSanitizedLoads(data.sanitized ?? []);
       const accepted = results.filter((r) => r.status === "accepted").length;
       const rejected = results.filter((r) => r.status === "rejected").length;
       const skipped = results.filter((r) => r.status === "skipped").length;
@@ -251,6 +268,53 @@ export default function Home() {
                   </ul>
                 </div>
               ))}
+          </div>
+        )}
+
+        {/* Sanitized data sent to SHV */}
+        {sanitizedLoads.length > 0 && (
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold text-gray-700">Sanitized data sent to SHV</h2>
+            <div className="bg-white rounded-xl shadow overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead className="bg-blue-50 text-blue-600 text-xs uppercase tracking-wide">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Load No.</th>
+                    <th className="px-4 py-3 text-left">BOL</th>
+                    <th className="px-4 py-3 text-left">Shipper</th>
+                    <th className="px-4 py-3 text-left">Origin</th>
+                    <th className="px-4 py-3 text-left">Destination</th>
+                    <th className="px-4 py-3 text-left">Ship Date</th>
+                    <th className="px-4 py-3 text-left">Del. Date</th>
+                    <th className="px-4 py-3 text-left">Weight (lbs)</th>
+                    <th className="px-4 py-3 text-left">Equipment Type</th>
+                    <th className="px-4 py-3 text-left">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {sanitizedLoads.map((load) => {
+                    const result = pushResults.find((r) => r.load_number === load.load_number);
+                    return (
+                      <tr key={load.load_number}>
+                        <td className="px-4 py-3 font-mono text-gray-800 whitespace-nowrap">{load.load_number}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.bol_number}</td>
+                        <td className="px-4 py-3 text-gray-600">{load.shipper_name}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.origin_city}, {load.origin_state}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.destination_city}, {load.destination_state}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.ship_date}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.delivery_date}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.weight.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.equipment_type || "—"}</td>
+                        <td className="px-4 py-3 text-xs">
+                          {result?.status === "accepted" && <span className="text-green-600 font-medium">Pushed</span>}
+                          {result?.status === "rejected" && <span className="text-red-600 font-medium">Rejected</span>}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
