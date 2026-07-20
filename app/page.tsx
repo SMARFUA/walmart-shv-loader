@@ -190,67 +190,49 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Loads table */}
+        {/* Walmart raw data table */}
         {loads.length > 0 && (
-          <div className="bg-white rounded-xl shadow overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-gray-100 text-gray-500 text-xs uppercase tracking-wide">
-                <tr>
-                  <th className="px-4 py-3 text-left">Load No.</th>
-                  <th className="px-4 py-3 text-left">BOL (Frt Ord)</th>
-                  <th className="px-4 py-3 text-left">Shipper</th>
-                  <th className="px-4 py-3 text-left">Origin</th>
-                  <th className="px-4 py-3 text-left">Destination</th>
-                  <th className="px-4 py-3 text-left">Ship Date</th>
-                  <th className="px-4 py-3 text-left">Del. Date</th>
-                  <th className="px-4 py-3 text-left">Weight</th>
-                  <th className="px-4 py-3 text-left">Mode</th>
-                  <th className="px-4 py-3 text-left">Equipment Type</th>
-                  <th className="px-4 py-3 text-left">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {loads.map((load) => {
-                  const eq = equipmentType(load.mode);
-                  const result = pushResults.find((r) => r.load_number === load.load_no);
-                  return (
-                    <tr key={load.load_no} className={eq.needsReview ? "bg-yellow-50" : ""}>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Walmart ERP</span>
+              <span className="text-xs text-gray-400">— raw data as received</span>
+            </div>
+            <div className="bg-white rounded-xl shadow overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead className="bg-gray-100 text-gray-500 text-xs uppercase tracking-wide">
+                  <tr>
+                    <th className="px-4 py-3 text-left">load_no</th>
+                    <th className="px-4 py-3 text-left">frt_ord_no (BOL)</th>
+                    <th className="px-4 py-3 text-left">shipper_nm</th>
+                    <th className="px-4 py-3 text-left">orig_city</th>
+                    <th className="px-4 py-3 text-left">orig_st</th>
+                    <th className="px-4 py-3 text-left">dest_city</th>
+                    <th className="px-4 py-3 text-left">dest_st</th>
+                    <th className="px-4 py-3 text-left">shp_dt</th>
+                    <th className="px-4 py-3 text-left">del_dt</th>
+                    <th className="px-4 py-3 text-left">wgt</th>
+                    <th className="px-4 py-3 text-left">mode</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {loads.map((load) => (
+                    <tr key={load.load_no}>
                       <td className="px-4 py-3 font-mono text-gray-800 whitespace-nowrap">{load.load_no}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.frt_ord_no}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap font-mono">{load.frt_ord_no}</td>
                       <td className="px-4 py-3 text-gray-600">{load.shipper_nm}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.orig_city}, {load.orig_st}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.dest_city}, {load.dest_st}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{displayDate(load.shp_dt)}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{displayDate(load.del_dt)}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{displayWeight(load.wgt)}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.orig_city}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.orig_st}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.dest_city}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.dest_st}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.shp_dt}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.del_dt}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.wgt ?? "—"}</td>
                       <td className="px-4 py-3 text-gray-600">{load.mode}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        {eq.needsReview
-                          ? <span className="text-yellow-700 font-medium">— Review needed</span>
-                          : <span className="text-gray-800">{eq.type}</span>}
-                      </td>
-                      <td className="px-4 py-3 text-xs">
-                        {result ? (
-                          result.status === "accepted" ? (
-                            <span className="text-green-600 font-medium">Pushed</span>
-                          ) : result.status === "skipped" ? (
-                            <span className="text-yellow-600">Skipped</span>
-                          ) : (
-                            <span className="text-red-600 font-medium" title={result.errors?.join("; ")}>
-                              Rejected
-                            </span>
-                          )
-                        ) : eq.needsReview ? (
-                          <span className="text-yellow-600">{eq.reason}</span>
-                        ) : (
-                          <span className="text-gray-400">Ready</span>
-                        )}
-                      </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
@@ -273,20 +255,25 @@ export default function Home() {
 
         {/* Sanitized data sent to SHV */}
         {sanitizedLoads.length > 0 && (
-          <div className="space-y-2">
-            <h2 className="text-sm font-semibold text-gray-700">Sanitized data sent to SHV</h2>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-600">SHV TMS</span>
+              <span className="text-xs text-gray-400">— sanitized data sent to SHV</span>
+            </div>
             <div className="bg-white rounded-xl shadow overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead className="bg-blue-50 text-blue-600 text-xs uppercase tracking-wide">
                   <tr>
-                    <th className="px-4 py-3 text-left">Load No.</th>
-                    <th className="px-4 py-3 text-left">BOL</th>
-                    <th className="px-4 py-3 text-left">Shipper</th>
-                    <th className="px-4 py-3 text-left">Origin</th>
-                    <th className="px-4 py-3 text-left">Destination</th>
-                    <th className="px-4 py-3 text-left">Ship Date</th>
-                    <th className="px-4 py-3 text-left">Del. Date</th>
-                    <th className="px-4 py-3 text-left">Weight (lbs)</th>
+                    <th className="px-4 py-3 text-left">Load Number</th>
+                    <th className="px-4 py-3 text-left">BOL Number</th>
+                    <th className="px-4 py-3 text-left">Shipper Name</th>
+                    <th className="px-4 py-3 text-left">Origin City</th>
+                    <th className="px-4 py-3 text-left">Origin State</th>
+                    <th className="px-4 py-3 text-left">Destination City</th>
+                    <th className="px-4 py-3 text-left">Destination State</th>
+                    <th className="px-4 py-3 text-left">Expected Ship Date</th>
+                    <th className="px-4 py-3 text-left">Expected Delivery Date</th>
+                    <th className="px-4 py-3 text-left">Total Weight (lbs)</th>
                     <th className="px-4 py-3 text-left">Equipment Type</th>
                     <th className="px-4 py-3 text-left">Status</th>
                   </tr>
@@ -299,8 +286,10 @@ export default function Home() {
                         <td className="px-4 py-3 font-mono text-gray-800 whitespace-nowrap">{load.load_number}</td>
                         <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.bol_number}</td>
                         <td className="px-4 py-3 text-gray-600">{load.shipper_name}</td>
-                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.origin_city}, {load.origin_state}</td>
-                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.destination_city}, {load.destination_state}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.origin_city}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.origin_state}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.destination_city}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.destination_state}</td>
                         <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.ship_date.slice(0,2)}/{load.ship_date.slice(2,4)}/{load.ship_date.slice(4)}</td>
                         <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.delivery_date.slice(0,2)}/{load.delivery_date.slice(2,4)}/{load.delivery_date.slice(4)}</td>
                         <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.weight}</td>
