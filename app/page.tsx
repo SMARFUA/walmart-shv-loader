@@ -301,9 +301,9 @@ export default function Home() {
                         <td className="px-4 py-3 text-gray-600">{load.shipper_name}</td>
                         <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.origin_city}, {load.origin_state}</td>
                         <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.destination_city}, {load.destination_state}</td>
-                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.ship_date}</td>
-                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.delivery_date}</td>
-                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.weight.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.ship_date.slice(0,2)}/{load.ship_date.slice(2,4)}/{load.ship_date.slice(4)}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.delivery_date.slice(0,2)}/{load.delivery_date.slice(2,4)}/{load.delivery_date.slice(4)}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.weight}</td>
                         <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.equipment_type || "—"}</td>
                         <td className="px-4 py-3 text-xs">
                           {result?.status === "accepted" && <span className="text-green-600 font-medium">Pushed</span>}
