@@ -224,8 +224,8 @@ export default function Home() {
                       <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.orig_st}</td>
                       <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.dest_city}</td>
                       <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.dest_st}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.shp_dt}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.del_dt}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{displayDate(load.shp_dt)}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{displayDate(load.del_dt)}</td>
                       <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{load.wgt ?? "—"}</td>
                       <td className="px-4 py-3 text-gray-600">{load.mode}</td>
                     </tr>
