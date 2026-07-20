@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const SHV_URL = "https://shv-logistics-tms.vercel.app/api/sor/loads";
-const USER_EMAIL = process.env.USER_EMAIL || "samka.marfua@accenture.com";
+const USER_EMAIL = process.env.USER_EMAIL || "samkakalpo@gmail.com";
 
 type WalmartLoad = {
   load_no: string;
@@ -49,11 +49,11 @@ function parseWeight(wgt: string | null): number {
   return Math.round(Number(wgt.replace(/,/g, "").replace(/\s*lbs?/i, "").trim())) || 0;
 }
 
-function getEquipmentType(mode: string): string | null {
+function getEquipmentType(mode: string): string {
   const m = (mode ?? "").toUpperCase().trim();
   if (m === "AMBIENT") return "Dry Van 53'";
   if (m === "REFRIGERATED" || m === "FREEZER") return "Reefer 53'";
-  return null;
+  return "";
 }
 
 export async function POST(req: NextRequest) {
@@ -64,37 +64,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No loads provided" }, { status: 400 });
     }
 
-    const toSend: SHVLoad[] = [];
-    const skipped: PushResult[] = [];
-
-    for (const load of loads) {
-      const equipment_type = getEquipmentType(load.mode);
-      if (!equipment_type) {
-        skipped.push({
-          load_number: load.load_no,
-          status: "skipped",
-          errors: [`Mode "${load.mode}" requires manual review — call Walmart for temperature details`],
-        });
-        continue;
-      }
-
-      toSend.push({
-        load_number: load.load_no,
-        bol_number: load.frt_ord_no,
-        shipper_name: load.shipper_nm.trim(),
-        origin_city: load.orig_city.trim(),
-        origin_state: load.orig_st.trim(),
-        destination_city: load.dest_city.trim(),
-        destination_state: load.dest_st.trim(),
-        ship_date: toSHVDate(load.shp_dt),
-        delivery_date: toSHVDate(load.del_dt),
-        weight: parseWeight(load.wgt),
-        equipment_type,
-      });
-    }
+    const toSend: SHVLoad[] = loads.map((load) => ({
+      load_number: load.load_no.trim(),
+      bol_number: load.frt_ord_no.trim(),
+      shipper_name: load.shipper_nm.trim(),
+      origin_city: load.orig_city.trim(),
+      origin_state: load.orig_st.trim(),
+      destination_city: load.dest_city.trim(),
+      destination_state: load.dest_st.trim(),
+      ship_date: toSHVDate(load.shp_dt),
+      delivery_date: toSHVDate(load.del_dt),
+      weight: parseWeight(load.wgt),
+      equipment_type: getEquipmentType(load.mode),
+    }));
 
     if (toSend.length === 0) {
-      return NextResponse.json({ results: skipped });
+      return NextResponse.json({ results: [] });
     }
 
     const body = toSend.length === 1 ? { load: toSend[0] } : { loads: toSend };
@@ -126,7 +111,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ results: [...pushed, ...skipped] });
+    return NextResponse.json({ results: pushed });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

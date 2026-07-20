@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const WALMART_API_URL = "https://wmt-freight-portal.vercel.app/api/sap/loads";
-const USER_EMAIL = process.env.USER_EMAIL || "samka.marfua@accenture.com";
+const USER_EMAIL = process.env.USER_EMAIL || "samkakalpo@gmail.com";
 
 export async function GET() {
   try {

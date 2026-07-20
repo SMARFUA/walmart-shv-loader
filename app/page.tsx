@@ -131,14 +131,22 @@ export default function Home() {
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Walmart → SHV Logistics Load Builder</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Fetch open tenders from Walmart, sanitize load data, and push them into the SHV TMS.
-          </p>
-          <p className="text-xs text-gray-400 mt-1">
-            Account: <span className="font-mono">samka.marfua@accenture.com</span>
-          </p>
+        <div className="space-y-3">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Walmart → SHV Logistics Load Builder</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Fetch open tenders from Walmart, sanitize load data, and push them into the SHV TMS.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-gray-500 whitespace-nowrap">Account email</label>
+            <input
+              type="email"
+              readOnly
+              value="samkakalpo@gmail.com"
+              className="font-mono text-xs bg-gray-100 border border-gray-200 rounded px-3 py-1.5 text-gray-700 w-64 cursor-default select-all"
+            />
+          </div>
         </div>
 
         {/* Buttons + status */}
